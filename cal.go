@@ -1,5 +1,5 @@
 /*
- * Heavy run load 11K INSERTS per transaction (Stability / Schema run).
+ * Heavy run load 11K INSERTS 100K SELECTS per second (Stability / Schema run).
  * curl -s http://ipORdomain:8000/cal_prep #creates db and table
  * Scraper v_2 go-bench-cal_insert 
  * ab -c 100 -n 1000 -k http://domain.com/cal_insert
@@ -29,7 +29,7 @@ import (
 
 
 const (
-    host            = "db.haproxy.g"		//PG HOST <DNS for round robbin to HAProxy> -> HAProxy -> cockroachdb nodes
+    host            = "172.19.0.2"		//PG HOST <DNS for round robbin to HAProxy> -> HAProxy -> cockroachdb nodes
     port            = 26257			//PG PORT
     user            = "root"			//DB USER NAME
     password        = ""			//DB PASSWORD
