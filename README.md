@@ -10,4 +10,3 @@ Scrappy load generation tool for cockroach via HTTP
  * http://domain.com/cal_insert
  * http://domain.com/cal_all
 */
-Alt-H1 go-cockroach load genertaion via http
