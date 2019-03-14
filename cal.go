@@ -28,7 +28,7 @@ import (
 
 
 const (
-    host            = "172.19.0.2"		//PG HOST <DNS for round robbin to HAProxy> -> HAProxy -> cockroachdb nodes
+    host            = "haproxy"		//PG HOST <DNS for round robbin to HAProxy> -> HAProxy -> cockroachdb nodes
     port            = 26257			//PG PORT
     user            = "root"			//DB USER NAME
     password        = ""			//DB PASSWORD
