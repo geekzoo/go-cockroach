@@ -50,6 +50,9 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+# Private Junk
 notes.txt
 irc/
-scrap*.go
+scrap*
+go-cockroach
+.*
