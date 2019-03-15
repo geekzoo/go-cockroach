@@ -29,7 +29,7 @@ import (
 
 
 const (
-    host            = "172.19.0.2"		//PG HOST <DNS for round robbin to HAProxy> -> HAProxy -> cockroachdb nodes
+    host            = "haproxy"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
     port            = 26257			//PG PORT
     user            = "root"			//DB USER NAME
     password        = ""			//DB PASSWORD
@@ -259,7 +259,7 @@ func main() {
             fmt.Printf("GF.TEST.%s.CAL-INSERT %d %d\n", hostname, elapsed7, epoc_now) //Write Carbon
 
             
-    for sel_c := 1; sel_c <= 40; sel_c++ {
+    for sel_c := 1; sel_c <= 50; sel_c++ {
             rand_0 := rand.Intn(1156)
             start := time.Now()
             err = db.QueryRow("SELECT calendar_id, reservation_id, company_id FROM uuid.cal_insert WHERE company_id = $1 LIMIT 1", rand_0).Scan(&calendar_id, &reservation_id, &company_id)
@@ -292,7 +292,7 @@ func cal_prep(w http.ResponseWriter, r *http.Request) {
             w.Header().Set("X-ENGINE", "V2")
             w.Header().Set("Access-Control-Allow-Origin", "*")
             w.Header().Set("X-TEST", "cal_prep")
-	    w.Header().Set("Content-Type", "text/html")
+            w.Header().Set("Content-Type", "text/html")
             
             psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s fallback_application_name=%s connect_timeout=%d sslmode=disable", host, port, user, password, dbname, fallback_application_name, connect_timeout)
             db, err := sql.Open("postgres", psqlInfo)
@@ -333,7 +333,7 @@ func cal_truncate(w http.ResponseWriter, r *http.Request) {
             w.Header().Set("X-ENGINE", "V2")
             w.Header().Set("Access-Control-Allow-Origin", "*")
             w.Header().Set("X-TEST", "cal_truncate")
-	    w.Header().Set("Content-Type", "text/html")
+            w.Header().Set("Content-Type", "text/html")
             
             psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s fallback_application_name=%s connect_timeout=%d sslmode=disable", host, port, user, password, dbname, fallback_application_name, connect_timeout)
             db, err := sql.Open("postgres", psqlInfo)
