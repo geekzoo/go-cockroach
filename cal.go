@@ -260,7 +260,7 @@ func main() {
             fmt.Printf("GF.TEST.%s.CAL-INSERT %d %d\n", hostname, elapsed7, epoc_now) //Write Carbon
 
             
-    for sel_c := 1; sel_c <= 50; sel_c++ {
+    for sel_c := 1; sel_c <= 40; sel_c++ {
             rand_0 := rand.Intn(1156)
             start := time.Now()
             err = db.QueryRow("SELECT calendar_id, reservation_id, company_id FROM uuid.cal_insert WHERE company_id = $1 LIMIT 1", rand_0).Scan(&calendar_id, &reservation_id, &company_id)
