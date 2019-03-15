@@ -350,14 +350,7 @@ func cal_truncate(w http.ResponseWriter, r *http.Request) {
 		db.Exec(`TRUNCATE TABLE uuid.cal_insert;`)
 		fmt.Fprintf(w, "DONE")
 }
-/*
- * 
- * 
- * 
- * 
- * SHOW SESSIONS
- * 
- */
+
 
  func show_sessions(w http.ResponseWriter, r *http.Request) {
             w.Header().Set("X-ENGINE", "V8")
@@ -406,12 +399,7 @@ func cal_truncate(w http.ResponseWriter, r *http.Request) {
             w.Write([]byte("<b><pre><font color=yellow> " + "|" + node_id + "|" + session_id + "|" + user_name + "|" + client_address + "|" + application_name + "|" + active_queries + "|" + last_active_query + "|" + session_start + "|" + fmt.Sprintf( "%v", oldest_query_start ) + "</b></pre></font>"))
 //            fmt.Println(node_id, session_id, user_name, client_address, application_name, active_queries, last_active_query, session_start, oldest_query_start)
    }
-    /*
-     * 
-     * 
-     * 
-     * 
-     */
+
     func newUUID() (string, error) {
         uuid := make([]byte, 16)
         n, err := io.ReadFull(crand.Reader, uuid)
