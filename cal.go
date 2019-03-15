@@ -69,6 +69,7 @@ func main() {
     r.HandleFunc("/cal_all", cal_all).Methods("GET")
     r.HandleFunc("/cal_prep", cal_prep).Methods("GET")
     r.HandleFunc("/cal_truncate", cal_truncate).Methods("GET")
+    r.HandleFunc("/show_sessions", show_sessions).Methods("GET")
     
     log.Fatal(srv.ListenAndServe())
 }
@@ -349,6 +350,61 @@ func cal_truncate(w http.ResponseWriter, r *http.Request) {
 		db.Exec(`TRUNCATE TABLE uuid.cal_insert;`)
 		fmt.Fprintf(w, "DONE")
 }
+/*
+ * 
+ * 
+ * 
+ * 
+ * SHOW SESSIONS
+ * 
+ */
+
+ func show_sessions(w http.ResponseWriter, r *http.Request) {
+            w.Header().Set("X-ENGINE", "V8")
+            w.Header().Set("Access-Control-Allow-Origin", "*")
+            w.Header().Set("X-NIKI", "FOREST GODES")
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s fallback_application_name=%s connect_timeout=%d sslmode=disable", host, port, user, password, dbname, fallback_application_name, connect_timeout)
+            db, err := sql.Open("postgres", psqlInfo)
+                if err != nil {
+            panic(err)
+                }
+            defer db.Close()
+            err = db.Ping()
+                if err != nil {
+            panic(err)
+                }
+//            fmt.Printf("\033[92mSuccessfully connected!\033[0m\n")
+            w.Write([]byte("<body style=background-color:grey;>"))
+            w.Write([]byte("<h1> DB SESSIONS </h1>"))
+            
+            node_id := ""
+            session_id := ""
+            user_name := ""
+            client_address := ""
+            application_name := ""
+            active_queries := ""
+            last_active_query := ""
+            session_start := ""
+            oldest_query_start := ""
+            
+        rows, err := db.Query("SELECT * FROM [SHOW CLUSTER SESSIONS]") //.Scan( &node_id, &session_id, &user_name, &client_address, &application_name, &active_queries, &last_active_query, &session_start, &oldest_query_start)
+                if err != nil {
+                    panic(err)
+                }
+            defer rows.Close()
+        for rows.Next() {
+            //var node_id string
+            var oldest_query_start sql.NullString
+            err = rows.Scan(&node_id, &session_id, &user_name, &client_address, &application_name, &active_queries, &last_active_query, &session_start, &oldest_query_start)
+                if err != nil {
+                    panic(err)
+                }
+            w.Write([]byte("<b><pre><font color=cyan> " + "|" + node_id + "|" + session_id + "|" + user_name + "|" + client_address + "|" + application_name + "|" + active_queries + "|" + last_active_query + "|" + session_start + "|" + fmt.Sprintf( "%v", oldest_query_start ) + "</b></pre></font>"))
+//            fmt.Println("\033[91m" + node_id, session_id, user_name, client_address, application_name, active_queries, last_active_query, session_start, oldest_query_start)
+        }
+            w.Write([]byte("<b><pre><font color=yellow> " + "|" + node_id + "|" + session_id + "|" + user_name + "|" + client_address + "|" + application_name + "|" + active_queries + "|" + last_active_query + "|" + session_start + "|" + fmt.Sprintf( "%v", oldest_query_start ) + "</b></pre></font>"))
+//            fmt.Println(node_id, session_id, user_name, client_address, application_name, active_queries, last_active_query, session_start, oldest_query_start)
+   }
     /*
      * 
      * 
