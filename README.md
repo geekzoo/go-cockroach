@@ -17,6 +17,7 @@ Scrappy load generation tool for cockroach via HTTP.
  * in a web browser goto 
  * http://domain.com:8000/cal_insert
  * http://domain.com:8000/cal_all
+ * http://domain.com:8000/show_sessions
 
 <b>TODO:</b> 
   * Add runtime options for http listen port
