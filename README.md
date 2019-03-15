@@ -7,6 +7,9 @@ Scrappy load generation tool for cockroach via HTTP.
  * go get github.com/Pallinder/go-randomdata
  * go get github.com/geekzoo/go-cockroach
  * cd $GOPATH/github.com/geekzoo/go-cockroach/
+ * vim cal.go 
+ #change host to your cockroachdb host name and port, user name/password 
+ #I user HAProxy for load balancing to the back end database server, I'll include a skel config at some point.
  * go run cal.go
  * curl -s http://domain.com:8000/cal_prep #creates db and table
  * ab -c 100 -n 1000 -k http://domain.com:8000/cal_insert
