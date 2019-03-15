@@ -68,6 +68,7 @@ func main() {
     r.HandleFunc("/cal_insert", cal_insert).Methods("GET")
     r.HandleFunc("/cal_all", cal_all).Methods("GET")
     r.HandleFunc("/cal_prep", cal_prep).Methods("GET")
+    r.HandleFunc("/cal_truncate", cal_truncate).Methods("GET")
     
     log.Fatal(srv.ListenAndServe())
 }
@@ -232,7 +233,7 @@ func main() {
             now = time.Now()
             epoc_now = now.Unix()
             hostname, err = os.Hostname()
-            fmt.Printf("GF.TEST.%s.CAL-DELETE %d %d\n", hostname, elapsed6, epoc_now)           
+            fmt.Printf("GF.TEST.%s.CAL-DELETE %d %d\n", hostname, elapsed6, epoc_now)
             
             
             rand_3 := rand.Intn(1156)
@@ -327,7 +328,28 @@ func cal_prep(w http.ResponseWriter, r *http.Request) {
 }
 
 
-
+func cal_truncate(w http.ResponseWriter, r *http.Request) {
+        
+            w.Header().Set("X-ENGINE", "V2")
+            w.Header().Set("Access-Control-Allow-Origin", "*")
+            w.Header().Set("X-TEST", "cal_truncate")
+	    w.Header().Set("Content-Type", "text/html")
+            
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s fallback_application_name=%s connect_timeout=%d sslmode=disable", host, port, user, password, dbname, fallback_application_name, connect_timeout)
+            db, err := sql.Open("postgres", psqlInfo)
+                if err != nil {
+            panic(err)
+                }
+            defer db.Close()
+            err = db.Ping()
+                if err != nil {
+            panic(err)
+                }
+//            fmt.Printf("\033[92mSuccessfully connected!\033[0m\n") //Carbon Error for stdout need to move stderr
+		fmt.Fprintf(w, "<pre>TRUNCATE uuid.cal_insert<br>")
+		db.Exec(`TRUNCATE TABLE uuid.cal_insert;`)
+		fmt.Fprintf(w, "DONE")
+}
     /*
      * 
      * 
