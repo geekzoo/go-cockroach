@@ -9,7 +9,6 @@ Scrappy load generation tool for cockroach via HTTP
  * in a web browser goto 
  * http://domain.com/cal_insert
  * http://domain.com/cal_all
-
-  * go get github.com/lib/pq
-  * go get github.com/gorilla/mux
-  * go get github.com/Pallinder/go-randomdata
+ * go get github.com/lib/pq
+ * go get github.com/gorilla/mux
+ * go get github.com/Pallinder/go-randomdata
