@@ -29,7 +29,7 @@ import (
 
 
 const (
-    host            = "haproxy"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
+    host            = "127.0.0.1"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
     port            = 26257			//PG PORT
     user            = "root"			//DB USER NAME
     password        = ""			//DB PASSWORD
@@ -394,6 +394,7 @@ func cal_truncate(w http.ResponseWriter, r *http.Request) {
             defer rows.Close()
         for rows.Next() {
             //var node_id string
+            //NEED to ADD condition for nil when a cockroach node is down!!!
             var oldest_query_start sql.NullString
             err = rows.Scan(&node_id, &session_id, &user_name, &client_address, &application_name, &active_queries, &last_active_query, &session_start, &oldest_query_start)
                 if err != nil {
