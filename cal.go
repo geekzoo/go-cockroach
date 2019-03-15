@@ -345,7 +345,6 @@ func cal_truncate(w http.ResponseWriter, r *http.Request) {
                 if err != nil {
             panic(err)
                 }
-//            fmt.Printf("\033[92mSuccessfully connected!\033[0m\n") //Carbon Error for stdout need to move stderr
 		fmt.Fprintf(w, "<pre>TRUNCATE uuid.cal_insert<br>")
 		db.Exec(`TRUNCATE TABLE uuid.cal_insert;`)
 		fmt.Fprintf(w, "DONE")
