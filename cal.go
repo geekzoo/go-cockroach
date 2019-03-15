@@ -223,7 +223,7 @@ func main() {
             epoc_now = now.Unix()
             hostname, err = os.Hostname()
             fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed5, epoc_now) 
-/*
+
             start6 := time.Now()
             db.Exec(`DELETE FROM uuid.cal_insert WHERE company_id=$1 AND reservation_id=$2 AND calendar_id=$3;`, company_id, reservation_id, calendar_id)
             elapsed6 := time.Since(start6)
@@ -232,8 +232,7 @@ func main() {
             now = time.Now()
             epoc_now = now.Unix()
             hostname, err = os.Hostname()
-            fmt.Printf("GF.TEST.%s.CAL-DELETE %d %d\n", hostname, elapsed6, epoc_now)
-*/            
+            fmt.Printf("GF.TEST.%s.CAL-DELETE %d %d\n", hostname, elapsed6, epoc_now)           
             
             
             rand_3 := rand.Intn(1156)
@@ -285,10 +284,6 @@ func main() {
     fmt.Printf("GF.TEST.%s.CAL-BLK.SELECT.SQL-FUNC %d %d\n", hostname, elapsed, epoc_now) //Write Carbon
     
     }
-    
-    
-    
-    
     
     
 func cal_prep(w http.ResponseWriter, r *http.Request) {
