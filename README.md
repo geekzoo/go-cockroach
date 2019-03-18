@@ -24,3 +24,6 @@ Scrappy load generation tool for cockroach via HTTP.
   * Add connection to carbon and influx
   * Add Base HAProxy config
   * Add condition for nil when a cockroach node is down /show_sessions!!!
+  
+ <b>BUGS</b>
+  * Panic if cockroach node is down and return nil
