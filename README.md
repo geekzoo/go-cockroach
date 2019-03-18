@@ -27,3 +27,5 @@ Scrappy load generation tool for cockroach via HTTP.
   
  <b>BUGS:</b>
   * show_sessions Panic if cockroach node is down and return nil
+  * Tcc or stdout carbon returns metric's per sql call N time per second.
+  default aggration is ever 10 seconds loss of resolution unless changed in carbon.
