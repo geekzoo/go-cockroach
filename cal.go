@@ -34,20 +34,20 @@ const (
     user            = "root"			//DB USER NAME
     password        = ""			//DB PASSWORD
     dbname          = "uuid"			//Database Name
-    fallback_application_name = "🦄Te🦄st🦄"
-    connect_timeout = 5
-    influxdb_host   = "insight.domain.com"
-    influxdb_port   = 6669
-    carbon_host     = "127.0.0.1"
-    carbon_port     = "2003"
-    carbon_link     = "US.GF.TESTING.TEST."
-    carbon_enabled  = true
-    irc_host        = "irc.domain.com"
-    irc_port        = 6666
-    elastic_host    = "insight.domain.com"
-    elastic_port    = 8888
-    srv_host        = "0.0.0.0"
-    srv_port        = 8000
+    fallback_application_name = "🦄Te🦄st🦄"	//Work around for db reported Application_name
+    connect_timeout = 5				//DB Time out
+    influxdb_host   = "insight.domain.com"	//TODO
+    influxdb_port   = 6669			//TODO
+    carbon_host     = "127.0.0.1"		//Carbon IP/Hostname <Graphite>
+    carbon_port     = "2003"			//Carbon port
+    carbon_link     = "US.GF.TESTING.TEST."	//TODO
+    carbon_enabled  = true			//Enable=true Disable=false
+    irc_host        = "irc.domain.com"		//TODO
+    irc_port        = 6666			//TODO
+    elastic_host    = "insight.domain.com"	//TODO
+    elastic_port    = 8888			//TODO
+    srv_host        = "0.0.0.0"			//IP/HostName for HTTP service
+    srv_port        = 8000			//HTTP Port
     srv_w_timeout   = 15			//Seconds <Write Timeout>
     srv_r_timeout   = 15			//Seconds <Read Timeout>
     srv_idle_timeout    = 60			//Seconds <Idle Timeout>
@@ -94,7 +94,7 @@ func main() {
                 if err != nil {
             panic(err)
                 }
-//            fmt.Printf("\033[92mSuccessfully connected!\033[0m\n") //Carbon Error for stdout need to move stderr
+
             w.Write([]byte("<body style=background-color:grey;>"))
             w.Write([]byte("<h1> cal_insert </h1>"))
 
@@ -124,8 +124,12 @@ func main() {
             epoc_now := now.Unix()
             hostname, err := os.Hostname()
             fmt.Printf("GF.TEST.%s.CAL-INSERT %d %d\n", hostname, elapsed2, epoc_now) //Write Carbon
+	    
+	    if carbon_enabled == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-INSERT.SQL-FUNC %d %d", hostname, elapsed2, epoc_now))
-            //Carbon END
+	    }
+	    
+	    //Carbon END
 	    //qps(elapsed2, epoc_now)
             
             if err != nil {}
@@ -138,9 +142,11 @@ func main() {
     hostname, err := os.Hostname()
     elapsed := time.Since(start_init)
     fmt.Printf("GF.TEST.%s.CAL-BLK.INSERT.SQL-FUNC %d %d\n", hostname, elapsed, epoc_now) //Write Carbon
+    
     if carbon_enabled == true {
     Tcc(fmt.Sprintf("GF.TEST.%s.CAL-BLK.INSERT.SQL-FUNC %d %d", hostname, elapsed, epoc_now))
     }
+    
     return 
     }
     
@@ -164,7 +170,6 @@ func main() {
                 if err != nil {
             panic(err)
                 }
-//            fmt.Printf("\033[92mSuccessfully connected!\033[0m\n") //Carbon Error for stdout
                     
             w.Write([]byte("<body style=background-color:grey;>"))
             ti := time.Now()
@@ -311,7 +316,7 @@ func cal_prep(w http.ResponseWriter, r *http.Request) {
                 if err != nil {
             panic(err)
                 }
-//            fmt.Printf("\033[92mSuccessfully connected!\033[0m\n") //Carbon Error for stdout need to move stderr
+
 		fmt.Fprintf(w, "<pre>CREATE DATABASE uuid<br>")
 		db.Exec(`CREATE DATABASE uuid;`)
 		fmt.Fprintf(w, "CREATE TABLE IF NOT EXISTS uuid.cal_insert<br>")

@@ -4,16 +4,16 @@ import (
   "net"
   "time"
 )
-func Tcc(bar string) {
+func Tcc(metric string) {
   conn, err := net.DialTimeout("tcp", carbon_host + ":" + carbon_port , 1*time.Second)
   if err != nil {
     fmt.Printf("\tCarbon: %v\n",err)
     return
   }
   defer conn.Close()
-  for bar != "" {
-    fmt.Fprintf(conn, "%v\n", bar)
-    bar = ""
+  for metric != "" {
+    fmt.Fprintf(conn, "%v\n", metric)
+    metric = ""
     break
   }
   

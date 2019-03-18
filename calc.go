@@ -1,3 +1,7 @@
+/*
+ * Just junk atm Idea is to count qps and report to stdout and carbon/influx and elasticsearch
+ * not sure how I want this to work so this is a junk function atm.
+ */
 package main
 import (
   "fmt"
