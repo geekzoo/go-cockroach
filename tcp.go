@@ -16,5 +16,4 @@ func Tcc(metric string) {
     metric = ""
     break
   }
-  
 }

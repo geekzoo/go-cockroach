@@ -198,6 +198,10 @@ func main() {
             now := time.Now()
             epoc_now := now.Unix()
             hostname, err := os.Hostname()
+	    
+	    if carbon_enabled == true {
+	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-SELECT.SQL-FUNC %d %d", hostname, elapsed2, epoc_now))
+	    }
             fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed2, epoc_now) 
             
             title = randomdata.Paragraph()
@@ -211,6 +215,10 @@ func main() {
             now = time.Now()
             epoc_now = now.Unix()
             hostname, err = os.Hostname()
+	    
+	    if carbon_enabled == true {
+	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-UPDATE.SQL-FUNC %d %d", hostname, elapsed3, epoc_now))
+	    }
             fmt.Printf("GF.TEST.%s.CAL-UPDATE %d %d\n", hostname, elapsed3, epoc_now) //Write Carbon
 /*
  */
@@ -223,6 +231,10 @@ func main() {
             now = time.Now()
             epoc_now = now.Unix()
             hostname, err = os.Hostname()
+
+	    if carbon_enabled == true {
+	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-INSERT.SQL-FUNC %d %d", hostname, elapsed2, epoc_now))
+	    }
             fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed4, epoc_now) 
 /*
  */
@@ -235,7 +247,11 @@ func main() {
             now = time.Now()
             epoc_now = now.Unix()
             hostname, err = os.Hostname()
-            fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed5, epoc_now) 
+            
+	    if carbon_enabled == true {
+	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-SELECT.SQL-FUNC %d %d", hostname, elapsed5, epoc_now))
+	    }
+	    fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed5, epoc_now) 
 
             start6 := time.Now()
             db.Exec(`DELETE FROM uuid.cal_insert WHERE company_id=$1 AND reservation_id=$2 AND calendar_id=$3;`, company_id, reservation_id, calendar_id)
@@ -245,6 +261,10 @@ func main() {
             now = time.Now()
             epoc_now = now.Unix()
             hostname, err = os.Hostname()
+	    
+	    if carbon_enabled == true {
+	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-DELETE.SQL-FUNC %d %d", hostname, elapsed6, epoc_now))
+	    }
             fmt.Printf("GF.TEST.%s.CAL-DELETE %d %d\n", hostname, elapsed6, epoc_now)
             
             
@@ -268,6 +288,10 @@ func main() {
             now = time.Now()
             epoc_now = now.Unix()
             hostname, err = os.Hostname()
+	    
+	    if carbon_enabled == true {
+	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-INSERT.SQL-FUNC %d %d", hostname, elapsed7, epoc_now))
+	    }
             fmt.Printf("GF.TEST.%s.CAL-INSERT %d %d\n", hostname, elapsed7, epoc_now) //Write Carbon
 
             
@@ -281,6 +305,10 @@ func main() {
             now = time.Now()
             epoc_now = now.Unix()
             hostname, err = os.Hostname()
+	    
+	    if carbon_enabled == true {
+	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-SELECT.SQL-FUNC %d %d", hostname, elapsed, epoc_now))
+	    }
             fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed, epoc_now)
     }
             
@@ -294,7 +322,11 @@ func main() {
     epoc_now := now.Unix()
     hostname, err := os.Hostname()
     elapsed := time.Since(start_init)
-    fmt.Printf("GF.TEST.%s.CAL-BLK.SELECT.SQL-FUNC %d %d\n", hostname, elapsed, epoc_now) //Write Carbon
+    
+    if carbon_enabled == true {
+    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-BLK.SQL-FUNC %d %d", hostname, elapsed, epoc_now))
+    }
+    fmt.Printf("GF.TEST.%s.CAL-BLK.SQL-FUNC %d %d\n", hostname, elapsed, epoc_now) //Write Carbon
     
     }
     
