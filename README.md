@@ -10,7 +10,7 @@ Scrappy load generation tool for cockroach via HTTP.
  * vim cal.go <br>
  Change host to your cockroachdb host name and port, user name/password <br>
  I use HAProxy for load balancing to the back end database server, I'll include a skel config at some point. <br>
- * go run cal.go
+ * go build && ./go-cockroach
  * curl -s http://domain.com:8000/cal_prep #creates db and table
  * ab -c 100 -n 1000 -k http://domain.com:8000/cal_insert
  * ab -c 100 -n 1000 -k http://domain.com:8000/cal_all
