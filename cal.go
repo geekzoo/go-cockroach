@@ -29,7 +29,7 @@ import (
 
 
 const (
-    host            = "127.0.0.1"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
+    host            = "172.19.0.2"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
     port            = 26257			//PG PORT
     user            = "root"			//DB USER NAME
     password        = ""			//DB PASSWORD
@@ -38,9 +38,10 @@ const (
     connect_timeout = 5
     influxdb_host   = "insight.domain.com"
     influxdb_port   = 6669
-    carbon_host     = "insight.domain.com"
-    carbon_port     = 2003
+    carbon_host     = "127.0.0.1"
+    carbon_port     = "2003"
     carbon_link     = "US.GF.TESTING.TEST."
+    carbon_enabled  = true
     irc_host        = "irc.domain.com"
     irc_port        = 6666
     elastic_host    = "insight.domain.com"
@@ -55,6 +56,7 @@ const (
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func main() {
+  
     r := mux.NewRouter()
     srv := &http.Server{
         Addr:           fmt.Sprintf("%v:%v",srv_host,srv_port),
@@ -93,7 +95,6 @@ func main() {
             panic(err)
                 }
 //            fmt.Printf("\033[92mSuccessfully connected!\033[0m\n") //Carbon Error for stdout need to move stderr
-
             w.Write([]byte("<body style=background-color:grey;>"))
             w.Write([]byte("<h1> cal_insert </h1>"))
 
@@ -123,7 +124,9 @@ func main() {
             epoc_now := now.Unix()
             hostname, err := os.Hostname()
             fmt.Printf("GF.TEST.%s.CAL-INSERT %d %d\n", hostname, elapsed2, epoc_now) //Write Carbon
+	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-INSERT.SQL-FUNC %d %d", hostname, elapsed2, epoc_now))
             //Carbon END
+	    //qps(elapsed2, epoc_now)
             
             if err != nil {}
 
@@ -135,7 +138,10 @@ func main() {
     hostname, err := os.Hostname()
     elapsed := time.Since(start_init)
     fmt.Printf("GF.TEST.%s.CAL-BLK.INSERT.SQL-FUNC %d %d\n", hostname, elapsed, epoc_now) //Write Carbon
-    
+    if carbon_enabled == true {
+    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-BLK.INSERT.SQL-FUNC %d %d", hostname, elapsed, epoc_now))
+    }
+    return 
     }
     
     /*
