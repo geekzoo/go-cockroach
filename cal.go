@@ -56,7 +56,7 @@ const (
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func main() {
-  
+  //carbon()
     r := mux.NewRouter()
     srv := &http.Server{
         Addr:           fmt.Sprintf("%v:%v",srv_host,srv_port),
