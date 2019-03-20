@@ -57,6 +57,7 @@ var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func main() {
   //carbon()
+  go doEvery(100*time.Millisecond, helloworld)
     r := mux.NewRouter()
     srv := &http.Server{
         Addr:           fmt.Sprintf("%v:%v",srv_host,srv_port),
@@ -79,7 +80,6 @@ func main() {
 
         func cal_insert(w http.ResponseWriter, r *http.Request) {
             start_init := time.Now()
-        
             w.Header().Set("X-ENGINE", "V2")
             w.Header().Set("Access-Control-Allow-Origin", "*")
             w.Header().Set("X-TEST", "cal_insert")
@@ -124,7 +124,12 @@ func main() {
             epoc_now := now.Unix()
             hostname, err := os.Hostname()
             fmt.Printf("GF.TEST.%s.CAL-INSERT %d %d\n", hostname, elapsed2, epoc_now) //Write Carbon
-	    
+//go qps(run_c)
+
+counter := Counter{0}
+counter.increment()
+fmt.Printf("\t\tcurrent value %d\n", counter.currentValue())
+
 	    if carbon_enabled == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-INSERT.SQL-FUNC %d %d", hostname, elapsed2, epoc_now))
 	    }

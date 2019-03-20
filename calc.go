@@ -8,11 +8,22 @@ import (
   "time"
 )
 
-func qps(time time.Duration, now int64) (time.Duration, int64) {
-    /*
-     * Collector <- count every seconds
-     * time.
-     */
-    fmt.Printf("%d %v\n", time, now)
-  return 10, 100
+func qps(now ...int) (int) {
+
+    if now != nil {
+
+	fmt.Printf("qps: %v\n", len(now))
+    }
+  return len(now)
+}
+
+func doEvery(d time.Duration, f func(time.Time)) {
+	for x := range time.Tick(d) {
+		f(x)
+	}
+}
+
+func helloworld(t time.Time) {
+	qps()
+	fmt.Printf("%v: Hello, World!\n", t)
 }
