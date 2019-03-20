@@ -29,7 +29,7 @@ import (
 
 
 const (
-    host            = "172.19.0.2"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
+    host            = "10.1.9.238"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
     port            = 26257			//PG PORT
     user            = "root"			//DB USER NAME
     password        = ""			//DB PASSWORD
@@ -57,7 +57,8 @@ var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func main() {
   //carbon()
-  go doEvery(100*time.Millisecond, helloworld)
+//  go doEvery(100*time.Millisecond, helloworld)
+proc(1)
     r := mux.NewRouter()
     srv := &http.Server{
         Addr:           fmt.Sprintf("%v:%v",srv_host,srv_port),
@@ -125,7 +126,6 @@ func main() {
             hostname, err := os.Hostname()
             fmt.Printf("GF.TEST.%s.CAL-INSERT %d %d\n", hostname, elapsed2, epoc_now) //Write Carbon
 //go qps(run_c)
-
 counter := Counter{0}
 counter.increment()
 fmt.Printf("\t\tcurrent value %d\n", counter.currentValue())
@@ -160,7 +160,7 @@ fmt.Printf("\t\tcurrent value %d\n", counter.currentValue())
     
         func cal_all(w http.ResponseWriter, r *http.Request) {
             start_init := time.Now()
-        
+proc(1)        
             w.Header().Set("X-ENGINE", "V2")
             w.Header().Set("Access-Control-Allow-Origin", "*")
             w.Header().Set("X-TEST", "cal_all")
