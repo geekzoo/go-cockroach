@@ -4,10 +4,18 @@ import (
   "net"
   "time"
 )
+
 func Tcc(metric string) {
-  conn, err := net.DialTimeout("tcp", carbon_host + ":" + carbon_port , 1*time.Second)
+    
+        if conn == nil {
+        conn, err := net.DialTimeout("tcp", carbon_host + ":" + carbon_port , 60*time.Second) //Spawns a new connection each call //Need to find a clean way of doing this
+        }
+        
+go func() {
   if err != nil {
-    fmt.Printf("\tCarbon: %v\n",err)
+ //       fmt.Printf("\tCarbon: %v\n",err)
+        blow_out = false
+ //   time.Sleep(60*time.Second)
     return
   }
   defer conn.Close()
@@ -16,4 +24,6 @@ func Tcc(metric string) {
     metric = ""
     break
   }
+  //conn.Close()
+}()  
 }

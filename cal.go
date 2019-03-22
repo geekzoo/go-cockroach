@@ -30,17 +30,17 @@ import (
 
 
 const (
-    host            = "172.19.0.2"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
+    host            = "10.1.9.238"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
     port            = 26257			//PG PORT
     user            = "root"			//DB USER NAME
     password        = ""			//DB PASSWORD
     dbname          = "uuid"			//Database Name
     fallback_application_name = "🦄Te🦄st🦄"	//Work around for db reported Application_name
-    connect_timeout = 5				//DB Time out
+    connect_timeout = 10				//DB Time out
     influxdb_host   = "insight.domain.com"	//TODO
     influxdb_port   = 6669			//TODO
     carbon_host     = "127.0.0.1"		//Carbon IP/Hostname <Graphite>
-    carbon_port     = "2003"			//Carbon port
+    carbon_port     = "2000"			//Carbon port
     carbon_link     = "US.GF.TESTING.TEST."	//TODO
     carbon_enabled  = true			//Enable=true Disable=false
     irc_host        = "irc.domain.com"		//TODO
@@ -56,15 +56,31 @@ const (
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 var ops uint64
+var blow_out bool
 
 func main() {
-  
+    blow_out = true //circut breaker
+fmt.Printf("\033c")
 go func() {
+    fmt.Printf("\033[0;0H")
     for {
       opsFinal := atomic.LoadUint64(&ops)
-      fmt.Println("ops:", opsFinal)
+      if opsFinal == 18446744073709551615 { 
+          fmt.Printf("\033[2K\rOP/S: \033[33m%d\033[0m", 0)
+          time.Sleep(time.Second)
+      }else{
+      fmt.Printf("\033[2K\rOP/S:\033[32m %v\033[0m", opsFinal)
+      atomic.AddUint64(&ops, ^opsFinal)
       time.Sleep(time.Second)
-	  atomic.AddUint64(&ops, ^opsFinal)
+     }
+    }
+}()
+
+go func() {
+//    fmt.Printf("\033[0;0H")
+    for {
+    blow_out = true
+      time.Sleep(10*time.Second)
      }
 }()
   
@@ -92,7 +108,7 @@ go func() {
 // END MAIN
 
         func cal_insert(w http.ResponseWriter, r *http.Request) {
-atomic.AddUint64(&ops, 1)	  
+//atomic.AddUint64(&ops, 1)
             start_init := time.Now()
             w.Header().Set("X-ENGINE", "V2")
             w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -115,7 +131,7 @@ atomic.AddUint64(&ops, 1)
             w.Write([]byte("<svg width=35 height=35> <circle cx=20 cy=20 r=10 stroke=green stroke-width=4 fill=yellow /> </svg> <font size=1px>Warm up.</font>"))
             w.Write([]byte("<svg width=35 height=35> <circle cx=20 cy=20 r=10 stroke=green stroke-width=4 fill=green /> </svg> <font size=1px>Done. </font>"))
 
-	for run_c := 1; run_c <= 1; run_c++ {
+	for run_c := 1; run_c <= 10; run_c++ {
             res_id, err := newUUID()
             calendar_id, err := newUUID()
             reservation_id, err := newUUID()
@@ -137,16 +153,11 @@ atomic.AddUint64(&ops, 1)
             now := time.Now()
             epoc_now := now.Unix()
             hostname, err := os.Hostname()
-            fmt.Printf("GF.TEST.%s.CAL-INSERT %d %d\n", hostname, elapsed2, epoc_now) //Write Carbon
+            //fmt.Printf("GF.TEST.%s.CAL-INSERT %d %d\n", hostname, elapsed2, epoc_now) //Write Carbon
 	    
+atomic.AddUint64(&ops, 1)
 
-	    
-	    
-	
-	    
-
-
-	    if carbon_enabled == true {
+	    if carbon_enabled == true && blow_out == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-INSERT.SQL-FUNC %d %d", hostname, elapsed2, epoc_now))
 	    }
 	    
@@ -164,9 +175,9 @@ atomic.AddUint64(&ops, 1)
     epoc_now := now.Unix()
     hostname, err := os.Hostname()
     elapsed := time.Since(start_init)
-    fmt.Printf("GF.TEST.%s.CAL-BLK.INSERT.SQL-FUNC %d %d\n", hostname, elapsed, epoc_now) //Write Carbon
+    //fmt.Printf("GF.TEST.%s.CAL-BLK.INSERT.SQL-FUNC %d %d\n", hostname, elapsed, epoc_now) //Write Carbon
     
-    if carbon_enabled == true {
+    if carbon_enabled == true && blow_out == true {
     Tcc(fmt.Sprintf("GF.TEST.%s.CAL-BLK.INSERT.SQL-FUNC %d %d", hostname, elapsed, epoc_now))
     }
     
@@ -224,7 +235,7 @@ atomic.AddUint64(&ops, 1)
 	    if carbon_enabled == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-SELECT.SQL-FUNC %d %d", hostname, elapsed2, epoc_now))
 	    }
-            fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed2, epoc_now) 
+            //fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed2, epoc_now) 
             
             title = randomdata.Paragraph()
             start3 := time.Now()
@@ -241,7 +252,7 @@ atomic.AddUint64(&ops, 1)
 	    if carbon_enabled == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-UPDATE.SQL-FUNC %d %d", hostname, elapsed3, epoc_now))
 	    }
-            fmt.Printf("GF.TEST.%s.CAL-UPDATE %d %d\n", hostname, elapsed3, epoc_now) //Write Carbon
+            //fmt.Printf("GF.TEST.%s.CAL-UPDATE %d %d\n", hostname, elapsed3, epoc_now) //Write Carbon
 /*
  */
             rand_1 := rand.Intn(1156)
@@ -257,7 +268,7 @@ atomic.AddUint64(&ops, 1)
 	    if carbon_enabled == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-INSERT.SQL-FUNC %d %d", hostname, elapsed2, epoc_now))
 	    }
-            fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed4, epoc_now) 
+            //fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed4, epoc_now) 
 /*
  */
             rand_2 := rand.Intn(1156)
@@ -273,7 +284,7 @@ atomic.AddUint64(&ops, 1)
 	    if carbon_enabled == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-SELECT.SQL-FUNC %d %d", hostname, elapsed5, epoc_now))
 	    }
-	    fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed5, epoc_now) 
+	    //fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed5, epoc_now) 
 
             start6 := time.Now()
             db.Exec(`DELETE FROM uuid.cal_insert WHERE company_id=$1 AND reservation_id=$2 AND calendar_id=$3;`, company_id, reservation_id, calendar_id)
@@ -287,7 +298,7 @@ atomic.AddUint64(&ops, 1)
 	    if carbon_enabled == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-DELETE.SQL-FUNC %d %d", hostname, elapsed6, epoc_now))
 	    }
-            fmt.Printf("GF.TEST.%s.CAL-DELETE %d %d\n", hostname, elapsed6, epoc_now)
+            //fmt.Printf("GF.TEST.%s.CAL-DELETE %d %d\n", hostname, elapsed6, epoc_now)
             
             
             rand_3 := rand.Intn(1156)
@@ -314,7 +325,7 @@ atomic.AddUint64(&ops, 1)
 	    if carbon_enabled == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-INSERT.SQL-FUNC %d %d", hostname, elapsed7, epoc_now))
 	    }
-            fmt.Printf("GF.TEST.%s.CAL-INSERT %d %d\n", hostname, elapsed7, epoc_now) //Write Carbon
+            //fmt.Printf("GF.TEST.%s.CAL-INSERT %d %d\n", hostname, elapsed7, epoc_now) //Write Carbon
 
             
     for sel_c := 1; sel_c <= 40; sel_c++ {
@@ -331,7 +342,7 @@ atomic.AddUint64(&ops, 1)
 	    if carbon_enabled == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-SELECT.SQL-FUNC %d %d", hostname, elapsed, epoc_now))
 	    }
-            fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed, epoc_now)
+            //fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed, epoc_now)
     }
             
             run_c++
@@ -348,7 +359,7 @@ atomic.AddUint64(&ops, 1)
     if carbon_enabled == true {
     Tcc(fmt.Sprintf("GF.TEST.%s.CAL-BLK.SQL-FUNC %d %d", hostname, elapsed, epoc_now))
     }
-    fmt.Printf("GF.TEST.%s.CAL-BLK.SQL-FUNC %d %d\n", hostname, elapsed, epoc_now) //Write Carbon
+    //fmt.Printf("GF.TEST.%s.CAL-BLK.SQL-FUNC %d %d\n", hostname, elapsed, epoc_now) //Write Carbon
     
     }
     
