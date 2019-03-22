@@ -24,12 +24,13 @@ import (
     crand  "crypto/rand"
     "io"
     "os"
+    "sync/atomic"
     "github.com/Pallinder/go-randomdata"
 )
 
 
 const (
-    host            = "10.1.9.238"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
+    host            = "172.19.0.2"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
     port            = 26257			//PG PORT
     user            = "root"			//DB USER NAME
     password        = ""			//DB PASSWORD
@@ -54,11 +55,22 @@ const (
 )
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+var ops uint64
 
 func main() {
-  //carbon()
-//  go doEvery(100*time.Millisecond, helloworld)
-proc(1)
+  
+go func() {
+    for {
+      opsFinal := atomic.LoadUint64(&ops)
+      fmt.Println("ops:", opsFinal)
+      time.Sleep(time.Second)
+	  atomic.AddUint64(&ops, ^opsFinal)
+     }
+}()
+  
+  
+  
+  
     r := mux.NewRouter()
     srv := &http.Server{
         Addr:           fmt.Sprintf("%v:%v",srv_host,srv_port),
@@ -80,6 +92,7 @@ proc(1)
 // END MAIN
 
         func cal_insert(w http.ResponseWriter, r *http.Request) {
+atomic.AddUint64(&ops, 1)	  
             start_init := time.Now()
             w.Header().Set("X-ENGINE", "V2")
             w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -125,10 +138,13 @@ proc(1)
             epoc_now := now.Unix()
             hostname, err := os.Hostname()
             fmt.Printf("GF.TEST.%s.CAL-INSERT %d %d\n", hostname, elapsed2, epoc_now) //Write Carbon
-//go qps(run_c)
-counter := Counter{0}
-counter.increment()
-fmt.Printf("\t\tcurrent value %d\n", counter.currentValue())
+	    
+
+	    
+	    
+	
+	    
+
 
 	    if carbon_enabled == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-INSERT.SQL-FUNC %d %d", hostname, elapsed2, epoc_now))
@@ -140,6 +156,8 @@ fmt.Printf("\t\tcurrent value %d\n", counter.currentValue())
             if err != nil {}
 
         }
+        
+        
     db.Close()
     w.Write([]byte("DONE"))
     now := time.Now()
@@ -159,8 +177,7 @@ fmt.Printf("\t\tcurrent value %d\n", counter.currentValue())
      */
     
         func cal_all(w http.ResponseWriter, r *http.Request) {
-            start_init := time.Now()
-proc(1)        
+            start_init := time.Now()     
             w.Header().Set("X-ENGINE", "V2")
             w.Header().Set("Access-Control-Allow-Origin", "*")
             w.Header().Set("X-TEST", "cal_all")
@@ -229,7 +246,7 @@ proc(1)
  */
             rand_1 := rand.Intn(1156)
             start4 := time.Now()
-      err = db.QueryRow("SELECT calendar_id, reservation_id, title, company_id FROM uuid.cal_insert WHERE company_id = $1 LIMIT 1", rand_1).Scan(&calendar_id, &reservation_id, &title, &company_id)
+	    err = db.QueryRow("SELECT calendar_id, reservation_id, title, company_id FROM uuid.cal_insert WHERE company_id = $1 LIMIT 1", rand_1).Scan(&calendar_id, &reservation_id, &title, &company_id)
             elapsed4 := time.Since(start4)
             tt4 := fmt.Sprintf("Time SQL:= %s", elapsed4)
             w.Write([]byte("<b><pre>cal_select " + fmt.Sprintf("%v", company_id) + " " + title + "<font color=yellow> " + tt4 + "</font></b></pre>")) 
