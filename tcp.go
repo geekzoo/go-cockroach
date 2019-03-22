@@ -7,9 +7,7 @@ import (
 
 func Tcc(metric string) {
     
-        if conn == nil {
         conn, err := net.DialTimeout("tcp", carbon_host + ":" + carbon_port , 60*time.Second) //Spawns a new connection each call //Need to find a clean way of doing this
-        }
         
 go func() {
   if err != nil {
