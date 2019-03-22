@@ -40,7 +40,7 @@ const (
     influxdb_host   = "insight.domain.com"	//TODO
     influxdb_port   = 6669			//TODO
     carbon_host     = "127.0.0.1"		//Carbon IP/Hostname <Graphite>
-    carbon_port     = "2000"			//Carbon port
+    carbon_port     = "2003"			//Carbon port
     carbon_link     = "US.GF.TESTING.TEST."	//TODO
     carbon_enabled  = true			//Enable=true Disable=false
     irc_host        = "irc.domain.com"		//TODO
@@ -59,17 +59,17 @@ var ops uint64
 var blow_out bool
 
 func main() {
-    blow_out = true //circut breaker
+blow_out = true //circut breaker
 fmt.Printf("\033c")
+
 go func() {
-    fmt.Printf("\033[0;0H")
     for {
       opsFinal := atomic.LoadUint64(&ops)
       if opsFinal == 18446744073709551615 { 
-          fmt.Printf("\033[2K\rOP/S: \033[33m%d\033[0m", 0)
+          fmt.Printf("\033[2K\rOP/s: \033[33m%d\033[0m", 0)
           time.Sleep(time.Second)
       }else{
-      fmt.Printf("\033[2K\rOP/S:\033[32m %v\033[0m", opsFinal)
+      fmt.Printf("\033[0;0H\033[2K\rOP/s:\033[32m %v\033[0m\033[C", opsFinal)
       atomic.AddUint64(&ops, ^opsFinal)
       time.Sleep(time.Second)
      }
@@ -77,10 +77,34 @@ go func() {
 }()
 
 go func() {
-//    fmt.Printf("\033[0;0H")
+
     for {
-    blow_out = true
-      time.Sleep(10*time.Second)
+        
+        fmt.Printf("\033[2;0H\033[2K\rRP/s:\033[32m %v\033[0m\033[C", blow_out)
+        time.Sleep(time.Second)
+
+    }
+}()
+
+go func() {
+
+    for {
+        if blow_out == true {
+        fmt.Printf("\033[3;0H\033[2K\rStats Active:\033[32m %v\033[0m\033[C", blow_out)
+        time.Sleep(time.Second)
+        }else{
+        fmt.Printf("\033[3;0H\033[2K\rStats Active:\033[93m %v\033[0m\033[C", blow_out)
+        time.Sleep(time.Second)
+        }
+    }
+}()
+
+
+/* Reset blow_out */
+go func() {
+    for {
+        blow_out = true
+        time.Sleep(10*time.Second)
      }
 }()
   
@@ -160,14 +184,10 @@ atomic.AddUint64(&ops, 1)
 	    if carbon_enabled == true && blow_out == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-INSERT.SQL-FUNC %d %d", hostname, elapsed2, epoc_now))
 	    }
-	    
-	    //Carbon END
-	    //qps(elapsed2, epoc_now)
             
             if err != nil {}
 
         }
-        
         
     db.Close()
     w.Write([]byte("DONE"))

@@ -7,21 +7,20 @@ import (
 
 func Tcc(metric string) {
     
-        conn, err := net.DialTimeout("tcp", carbon_host + ":" + carbon_port , 60*time.Second) //Spawns a new connection each call //Need to find a clean way of doing this
+        t_conn, err := net.DialTimeout("tcp", carbon_host + ":" + carbon_port , 60*time.Second) //Spawns a new connection each call //Need to find a clean way of doing this
         
 go func() {
   if err != nil {
  //       fmt.Printf("\tCarbon: %v\n",err)
         blow_out = false
- //   time.Sleep(60*time.Second)
     return
   }
-  defer conn.Close()
+  defer t_conn.Close()
   for metric != "" {
-    fmt.Fprintf(conn, "%v\n", metric)
+    fmt.Fprintf(t_conn, "%v\n", metric)
     metric = ""
     break
   }
-  //conn.Close()
+  t_conn.Close()
 }()  
 }
