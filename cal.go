@@ -40,7 +40,7 @@ const (
     influxdb_host   = "insight.domain.com"	//TODO
     influxdb_port   = 6669			//TODO
     carbon_host     = "127.0.0.1"		//Carbon IP/Hostname <Graphite>
-    carbon_port     = "2003"			//Carbon port
+    carbon_port     = "2000"			//Carbon port
     carbon_link     = "US.GF.TESTING.TEST."	//TODO
     carbon_enabled  = true			//Enable=true Disable=false
     irc_host        = "irc.domain.com"		//TODO
