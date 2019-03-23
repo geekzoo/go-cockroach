@@ -30,7 +30,7 @@ import (
 
 
 const (
-    host            = "10.1.9.238"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
+    host            = "172.19.0.2"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
     port            = 26257			//PG PORT
     user            = "root"			//DB USER NAME
     password        = ""			//DB PASSWORD
@@ -40,7 +40,7 @@ const (
     influxdb_host   = "insight.domain.com"	//TODO
     influxdb_port   = 6669			//TODO
     carbon_host     = "127.0.0.1"		//Carbon IP/Hostname <Graphite>
-    carbon_port     = "2000"			//Carbon port
+    carbon_port     = "2003"			//Carbon port
     carbon_link     = "US.GF.TESTING.TEST."	//TODO
     carbon_enabled  = true			//Enable=true Disable=false
     irc_host        = "irc.domain.com"		//TODO
@@ -56,6 +56,7 @@ const (
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 var ops uint64
+var rps uint64
 var blow_out bool
 
 func main() {
@@ -66,7 +67,7 @@ go func() {
     for {
       opsFinal := atomic.LoadUint64(&ops)
       if opsFinal == 18446744073709551615 { 
-          fmt.Printf("\033[2K\rOP/s: \033[33m%d\033[0m", 0)
+          fmt.Printf("\033[0;0H\033[2K\rOP/s: \033[33m%d\033[0m", 0)
           time.Sleep(time.Second)
       }else{
       fmt.Printf("\033[0;0H\033[2K\rOP/s:\033[32m %v\033[0m\033[C", opsFinal)
@@ -77,12 +78,16 @@ go func() {
 }()
 
 go func() {
-
     for {
-        
-        fmt.Printf("\033[2;0H\033[2K\rRP/s:\033[32m %v\033[0m\033[C", blow_out)
+      rpsFinal := atomic.LoadUint64(&rps)
+      if rpsFinal == 18446744073709551615 {
+        fmt.Printf("\033[2;0H\033[2K\rRP/s: \033[33m%d\033[0m", 0)
         time.Sleep(time.Second)
-
+      }else{
+	fmt.Printf("\033[2;0H\033[2K\rRP/s:\033[32m %v\033[0m\033[C", rpsFinal)
+	atomic.AddUint64(&rps, ^rpsFinal)
+	time.Sleep(time.Second)
+      }
     }
 }()
 
@@ -108,9 +113,6 @@ go func() {
      }
 }()
   
-  
-  
-  
     r := mux.NewRouter()
     srv := &http.Server{
         Addr:           fmt.Sprintf("%v:%v",srv_host,srv_port),
@@ -132,7 +134,6 @@ go func() {
 // END MAIN
 
         func cal_insert(w http.ResponseWriter, r *http.Request) {
-//atomic.AddUint64(&ops, 1)
             start_init := time.Now()
             w.Header().Set("X-ENGINE", "V2")
             w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -178,7 +179,8 @@ go func() {
             epoc_now := now.Unix()
             hostname, err := os.Hostname()
             //fmt.Printf("GF.TEST.%s.CAL-INSERT %d %d\n", hostname, elapsed2, epoc_now) //Write Carbon
-	    
+
+// OP/S counter
 atomic.AddUint64(&ops, 1)
 
 	    if carbon_enabled == true && blow_out == true {
@@ -201,6 +203,8 @@ atomic.AddUint64(&ops, 1)
     Tcc(fmt.Sprintf("GF.TEST.%s.CAL-BLK.INSERT.SQL-FUNC %d %d", hostname, elapsed, epoc_now))
     }
     
+// RP/S counter 
+atomic.AddUint64(&rps, 1)
     return 
     }
     
