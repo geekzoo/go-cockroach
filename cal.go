@@ -65,6 +65,8 @@ func main() {
   if carbon_enabled == true {
     blow_out = true 				//circut breaker
   }
+s_sys()
+time.Sleep(1*time.Second)
 
 fmt.Printf("\033c")
 
@@ -130,12 +132,12 @@ go func() {
 	old_lat = lat
 	  fmt.Printf("\033[5;0H\033[2K\rLat:\033[32m %v\033[0m\033[C", lat)
 	  fmt.Printf("\033[6;0H\033[2K\rLat RAW:\033[32m %d\033[0m\033[C", lat)
-fmt.Printf("\033[7;0H\033[2K\rRAW:\033[95m %v, %v\033[0m\033[C", lat, old_lat)
+fmt.Printf("\033[14;0H\033[2K\rRAW:\033[95m %v, %v\033[0m\033[C", lat, old_lat)
 	  time.Sleep(time.Second)
         }else{
 	  fmt.Printf("\033[5;0H\033[2K\rLat:\033[93m %v\033[0m\033[C", lat)
 	  fmt.Printf("\033[6;0H\033[2K\rLat RAW:\033[91m %d\033[0m\033[C", lat)
-fmt.Printf("\033[8;0H\033[2K\rRAW:\033[91m %v, %v\033[0m\033[C", lat, old_lat)
+fmt.Printf("\033[15;0H\033[2K\rRAW:\033[91m %v, %v\033[0m\033[C", lat, old_lat)
 	  time.Sleep(time.Second)
         }
     }
@@ -280,6 +282,7 @@ lat = elapsed2
 
 	    if carbon_enabled == true && blow_out == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-INSERT.SQL-FUNC %d %d", hostname, elapsed2, epoc_now))
+//	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-INSERT.OPS %d %d", hostname, s_insertFinal, epoc_now))
 	    }
             
             if err != nil {}
