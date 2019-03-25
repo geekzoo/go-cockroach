@@ -55,12 +55,17 @@ const (
 )
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-var ops uint64
-var rps uint64
-var blow_out bool
+var ops, rps uint64 				//ops sql operations // rps http operations
+var s_insert, s_select, s_update, s_delete uint64 //TODO count each type per ops breal down
+var blow_out bool 				// circute for extermal stats
+var lat, old_lat time.Duration 			//test to zero stats in no new data
 
 func main() {
-blow_out = true //circut breaker
+
+  if carbon_enabled == true {
+    blow_out = true 				//circut breaker
+  }
+
 fmt.Printf("\033c")
 
 go func() {
@@ -70,9 +75,9 @@ go func() {
           fmt.Printf("\033[0;0H\033[2K\rOP/s: \033[33m%d\033[0m", 0)
           time.Sleep(time.Second)
       }else{
-      fmt.Printf("\033[0;0H\033[2K\rOP/s:\033[32m %v\033[0m\033[C", opsFinal)
-      atomic.AddUint64(&ops, ^opsFinal)
-      time.Sleep(time.Second)
+	fmt.Printf("\033[0;0H\033[2K\rOP/s:\033[32m %v\033[0m\033[C", opsFinal)
+	atomic.AddUint64(&ops, ^opsFinal)
+	time.Sleep(time.Second)
      }
     }
 }()
@@ -81,12 +86,12 @@ go func() {
     for {
       rpsFinal := atomic.LoadUint64(&rps)
       if rpsFinal == 18446744073709551615 {
-        fmt.Printf("\033[2;0H\033[2K\rRP/s: \033[33m%d\033[0m", 0)
-        time.Sleep(time.Second)
+	  fmt.Printf("\033[2;0H\033[2K\rRP/s: \033[33m%d\033[0m", 0)
+	  time.Sleep(time.Second)
       }else{
-	fmt.Printf("\033[2;0H\033[2K\rRP/s:\033[32m %v\033[0m\033[C", rpsFinal)
-	atomic.AddUint64(&rps, ^rpsFinal)
-	time.Sleep(time.Second)
+	  fmt.Printf("\033[2;0H\033[2K\rRP/s:\033[32m %v\033[0m\033[C", rpsFinal)
+	  atomic.AddUint64(&rps, ^rpsFinal)
+	  time.Sleep(time.Second)
       }
     }
 }()
@@ -95,20 +100,109 @@ go func() {
 
     for {
         if blow_out == true {
-        fmt.Printf("\033[3;0H\033[2K\rStats Active:\033[32m %v\033[0m\033[C", blow_out)
-        time.Sleep(time.Second)
+	  fmt.Printf("\033[3;0H\033[2K\rStats Active:\033[32m %v\033[0m\033[C", blow_out)
+	  time.Sleep(time.Second)
         }else{
-        fmt.Printf("\033[3;0H\033[2K\rStats Active:\033[93m %v\033[0m\033[C", blow_out)
-        time.Sleep(time.Second)
+	  fmt.Printf("\033[3;0H\033[2K\rStats Active:\033[93m %v\033[0m\033[C", blow_out)
+	  time.Sleep(time.Second)
         }
     }
 }()
 
+go func() {
+
+    for {
+        if blow_out == true {
+	  fmt.Printf("\033[4;0H\033[2K\rHealthy:\033[32m %v\033[0m\033[C", blow_out)
+	  time.Sleep(time.Second)
+        }else{
+	  fmt.Printf("\033[4;0H\033[2K\rHealthy:\033[93m %v\033[0m\033[C", blow_out)
+	  time.Sleep(time.Second)
+        }
+    }
+}()
+
+go func() {
+
+    for {
+        if lat < 30000000 {
+//		 23317344
+	old_lat = lat
+	  fmt.Printf("\033[5;0H\033[2K\rLat:\033[32m %v\033[0m\033[C", lat)
+	  fmt.Printf("\033[6;0H\033[2K\rLat RAW:\033[32m %d\033[0m\033[C", lat)
+fmt.Printf("\033[7;0H\033[2K\rRAW:\033[95m %v, %v\033[0m\033[C", lat, old_lat)
+	  time.Sleep(time.Second)
+        }else{
+	  fmt.Printf("\033[5;0H\033[2K\rLat:\033[93m %v\033[0m\033[C", lat)
+	  fmt.Printf("\033[6;0H\033[2K\rLat RAW:\033[91m %d\033[0m\033[C", lat)
+fmt.Printf("\033[8;0H\033[2K\rRAW:\033[91m %v, %v\033[0m\033[C", lat, old_lat)
+	  time.Sleep(time.Second)
+        }
+    }
+}()
+
+go func() {
+    for {
+      s_selectFinal := atomic.LoadUint64(&s_select)
+      if s_selectFinal == 18446744073709551615 { 
+          fmt.Printf("\033[9;0H\033[2K\rSELECTS/s: \033[33m%d\033[0m", 0)
+          time.Sleep(time.Second)
+      }else{
+	fmt.Printf("\033[9;0H\033[2K\rSELECTS/s:\033[32m %v\033[0m\033[C", s_selectFinal)
+	atomic.AddUint64(&s_select, ^s_selectFinal)
+	time.Sleep(time.Second)
+     }
+    }
+}()
+
+go func() {
+    for {
+      s_updateFinal := atomic.LoadUint64(&s_update)
+      if s_updateFinal == 18446744073709551615 { 
+          fmt.Printf("\033[10;0H\033[2K\rUPDATES/s: \033[33m%d\033[0m", 0)
+          time.Sleep(time.Second)
+      }else{
+	fmt.Printf("\033[10;0H\033[2K\rUPDATES/s:\033[32m %v\033[0m\033[C", s_updateFinal)
+	atomic.AddUint64(&s_update, ^s_updateFinal)
+	time.Sleep(time.Second)
+     }
+    }
+}()
+
+go func() {
+    for {
+      s_insertFinal := atomic.LoadUint64(&s_insert)
+      if s_insertFinal == 18446744073709551615 { 
+          fmt.Printf("\033[11;0H\033[2K\rINSERTS/s: \033[33m%d\033[0m", 0)
+          time.Sleep(time.Second)
+      }else{
+	fmt.Printf("\033[11;0H\033[2K\rINSERTS/s:\033[32m %v\033[0m\033[C", s_insertFinal)
+	atomic.AddUint64(&s_insert, ^s_insertFinal)
+	time.Sleep(time.Second)
+     }
+    }
+}()
+
+go func() {
+    for {
+      s_deleteFinal := atomic.LoadUint64(&s_delete)
+      if s_deleteFinal == 18446744073709551615 { 
+          fmt.Printf("\033[12;0H\033[2K\rDELETES/s: \033[33m%d\033[0m", 0)
+          time.Sleep(time.Second)
+      }else{
+	fmt.Printf("\033[12;0H\033[2K\rDELETES/s:\033[32m %v\033[0m\033[C", s_deleteFinal)
+	atomic.AddUint64(&s_delete, ^s_deleteFinal)
+	time.Sleep(time.Second)
+     }
+    }
+}()
 
 /* Reset blow_out */
 go func() {
     for {
+      if carbon_enabled == true {
         blow_out = true
+      }
         time.Sleep(10*time.Second)
      }
 }()
@@ -170,6 +264,9 @@ go func() {
             
             start2 := time.Now()
             err = db.QueryRow("INSERT INTO uuid.cal_insert (calendar_id, reservation_id, company_id, title, location, organizer_email, reservation_begin, reservation_end) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING reservation_id", calendar_id, res_id, company_id, title, location, organizer_email, t1, t2).Scan(&reservation_id)
+// OP/S counter
+atomic.AddUint64(&ops, 1)
+atomic.AddUint64(&s_insert, 1)
             elapsed2 := time.Since(start2)
             tt2 := fmt.Sprintf("Time SQL:= %s", elapsed2)
             w.Write([]byte("<b><pre>MULTIUUID " + " " + calendar_id + " <font color=green>" + reservation_id + "</font> " + fmt.Sprintf(" co:[%d] ",company_id) + "<font size=0.01px><p>" + title + "</font></p>" + "<font color=yellow> " + tt2 + "</font></b></pre>"))
@@ -178,10 +275,8 @@ go func() {
             now := time.Now()
             epoc_now := now.Unix()
             hostname, err := os.Hostname()
-            //fmt.Printf("GF.TEST.%s.CAL-INSERT %d %d\n", hostname, elapsed2, epoc_now) //Write Carbon
+lat = elapsed2
 
-// OP/S counter
-atomic.AddUint64(&ops, 1)
 
 	    if carbon_enabled == true && blow_out == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-INSERT.SQL-FUNC %d %d", hostname, elapsed2, epoc_now))
@@ -197,7 +292,6 @@ atomic.AddUint64(&ops, 1)
     epoc_now := now.Unix()
     hostname, err := os.Hostname()
     elapsed := time.Since(start_init)
-    //fmt.Printf("GF.TEST.%s.CAL-BLK.INSERT.SQL-FUNC %d %d\n", hostname, elapsed, epoc_now) //Write Carbon
     
     if carbon_enabled == true && blow_out == true {
     Tcc(fmt.Sprintf("GF.TEST.%s.CAL-BLK.INSERT.SQL-FUNC %d %d", hostname, elapsed, epoc_now))
@@ -249,7 +343,12 @@ atomic.AddUint64(&rps, 1)
             rand_0 := rand.Intn(1156)
             start2 := time.Now()
             err = db.QueryRow("SELECT calendar_id, reservation_id, title, company_id FROM uuid.cal_insert WHERE company_id = $1 LIMIT 1", rand_0).Scan(&calendar_id, &reservation_id, &title, &company_id)
+
+atomic.AddUint64(&ops, 1)
+atomic.AddUint64(&s_select, 1)
+
             elapsed2 := time.Since(start2)
+lat = elapsed2	    
             tt2 := fmt.Sprintf("Time SQL:= %s", elapsed2)
             w.Write([]byte("<b><pre>cal_select " + fmt.Sprintf("%v", company_id) + " " + title + "<font color=yellow> " + tt2 + "</font></b></pre>"))
             now := time.Now()
@@ -259,12 +358,14 @@ atomic.AddUint64(&rps, 1)
 	    if carbon_enabled == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-SELECT.SQL-FUNC %d %d", hostname, elapsed2, epoc_now))
 	    }
-            //fmt.Printf("GF.TEST.%s.CAL-SELECT %d %d\n", hostname, elapsed2, epoc_now) 
             
             title = randomdata.Paragraph()
             start3 := time.Now()
             err = db.QueryRow("UPDATE uuid.cal_insert SET title=$4 WHERE company_id=$1 AND calendar_id=$2 AND reservation_id=$3 RETURNING title", company_id, calendar_id, reservation_id, title).Scan(&title)
+atomic.AddUint64(&ops, 1)
+atomic.AddUint64(&s_update, 1)
             elapsed3 := time.Since(start3)
+lat = elapsed3	    
             tt3 := fmt.Sprintf("Time SQL:= %s", elapsed3)
             
             w.Write([]byte("<b><pre>cal_update " + fmt.Sprintf("%v", company_id) + " " + title + "<font color=yellow> " + tt3 + "</font></b></pre>"))
@@ -276,13 +377,15 @@ atomic.AddUint64(&rps, 1)
 	    if carbon_enabled == true {
 	    Tcc(fmt.Sprintf("GF.TEST.%s.CAL-UPDATE.SQL-FUNC %d %d", hostname, elapsed3, epoc_now))
 	    }
-            //fmt.Printf("GF.TEST.%s.CAL-UPDATE %d %d\n", hostname, elapsed3, epoc_now) //Write Carbon
 /*
  */
             rand_1 := rand.Intn(1156)
             start4 := time.Now()
 	    err = db.QueryRow("SELECT calendar_id, reservation_id, title, company_id FROM uuid.cal_insert WHERE company_id = $1 LIMIT 1", rand_1).Scan(&calendar_id, &reservation_id, &title, &company_id)
+atomic.AddUint64(&s_select, 1)	    
+atomic.AddUint64(&ops, 1)	    
             elapsed4 := time.Since(start4)
+lat = elapsed4	    
             tt4 := fmt.Sprintf("Time SQL:= %s", elapsed4)
             w.Write([]byte("<b><pre>cal_select " + fmt.Sprintf("%v", company_id) + " " + title + "<font color=yellow> " + tt4 + "</font></b></pre>")) 
             now = time.Now()
@@ -298,7 +401,10 @@ atomic.AddUint64(&rps, 1)
             rand_2 := rand.Intn(1156)
             start5 := time.Now()
             err = db.QueryRow("SELECT calendar_id, reservation_id, company_id FROM uuid.cal_insert WHERE company_id = $1 LIMIT 1", rand_2).Scan(&calendar_id, &reservation_id, &company_id)
+atomic.AddUint64(&s_select, 1)	    
+atomic.AddUint64(&ops, 1)	    
             elapsed5 := time.Since(start5)
+lat = elapsed5	    
             tt5 := fmt.Sprintf("Time SQL:= %s", elapsed5)
             w.Write([]byte("<b><pre>cal_select " + fmt.Sprintf("%v", company_id) + " " + reservation_id + "<font color=yellow> " + tt5 + "</font></b></pre>")) 
             now = time.Now()
@@ -312,7 +418,10 @@ atomic.AddUint64(&rps, 1)
 
             start6 := time.Now()
             db.Exec(`DELETE FROM uuid.cal_insert WHERE company_id=$1 AND reservation_id=$2 AND calendar_id=$3;`, company_id, reservation_id, calendar_id)
+atomic.AddUint64(&ops, 1)
+atomic.AddUint64(&s_delete, 1)
             elapsed6 := time.Since(start6)
+lat = elapsed6	    
             tt6 := fmt.Sprintf("Time SQL:= %s", elapsed6)
             w.Write([]byte("<b><pre>cal_delete " + fmt.Sprintf("%v", company_id) + " " + reservation_id + "<font color=yellow> " + tt6 + "</font></b></pre>")) 
             now = time.Now()
@@ -339,7 +448,12 @@ atomic.AddUint64(&rps, 1)
             
             start7 := time.Now()
             err = db.QueryRow("INSERT INTO uuid.cal_insert (calendar_id, reservation_id, company_id, title, location, organizer_email, reservation_begin, reservation_end) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING reservation_id", calendar_id, res_id, company_id, title, location, organizer_email, t1, t2).Scan(&reservation_id)
+
+atomic.AddUint64(&ops, 1)
+atomic.AddUint64(&s_insert, 1)
+
             elapsed7 := time.Since(start7)
+lat = elapsed7	    
             tt7 := fmt.Sprintf("Time SQL:= %s", elapsed7)
             w.Write([]byte("<b><pre>cal_insert " + fmt.Sprintf("%v", company_id) + " " + reservation_id + "<font color=yellow> " + tt7 + "</font></b></pre>"))
             now = time.Now()
@@ -356,6 +470,8 @@ atomic.AddUint64(&rps, 1)
             rand_0 := rand.Intn(1156)
             start := time.Now()
             err = db.QueryRow("SELECT calendar_id, reservation_id, company_id FROM uuid.cal_insert WHERE company_id = $1 LIMIT 1", rand_0).Scan(&calendar_id, &reservation_id, &company_id)
+atomic.AddUint64(&s_select, 1)
+atomic.AddUint64(&ops, 1)
             elapsed := time.Since(start)
             tt1 := fmt.Sprintf("Time SQL:= %s", elapsed)
             w.Write([]byte("<b><pre>cal_select_loop " + fmt.Sprintf("%v", company_id) + " " + reservation_id + "<font color=yellow> " + tt1 + "</font></b></pre>"))
@@ -379,7 +495,9 @@ atomic.AddUint64(&rps, 1)
     epoc_now := now.Unix()
     hostname, err := os.Hostname()
     elapsed := time.Since(start_init)
-    
+
+atomic.AddUint64(&rps, 1)
+
     if carbon_enabled == true {
     Tcc(fmt.Sprintf("GF.TEST.%s.CAL-BLK.SQL-FUNC %d %d", hostname, elapsed, epoc_now))
     }
