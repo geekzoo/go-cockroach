@@ -11,7 +11,6 @@ func Tcc(metric string) {
         
 go func() {
   if err != nil {
- //       fmt.Printf("\tCarbon: %v\n",err)
         blow_out = false
     return
   }

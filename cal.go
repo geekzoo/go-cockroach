@@ -30,7 +30,7 @@ import (
 
 
 const (
-    host            = "172.19.0.2"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
+    host            = "10.1.9.238"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
     port            = 26257			//PG PORT
     user            = "root"			//DB USER NAME
     password        = ""			//DB PASSWORD
@@ -40,7 +40,7 @@ const (
     influxdb_host   = "insight.domain.com"	//TODO
     influxdb_port   = 6669			//TODO
     carbon_host     = "127.0.0.1"		//Carbon IP/Hostname <Graphite>
-    carbon_port     = "2003"			//Carbon port
+    carbon_port     = "2000"			//Carbon port
     carbon_link     = "US.GF.TESTING.TEST."	//TODO
     carbon_enabled  = true			//Enable=true Disable=false
     irc_host        = "irc.domain.com"		//TODO
@@ -65,8 +65,8 @@ func main() {
   if carbon_enabled == true {
     blow_out = true 				//circut breaker
   }
-s_sys()
-time.Sleep(1*time.Second)
+//s_sys()
+//time.Sleep(1*time.Second)
 
 fmt.Printf("\033c")
 
@@ -127,9 +127,9 @@ go func() {
 go func() {
 
     for {
+        old_lat = lat
         if lat < 30000000 {
 //		 23317344
-	old_lat = lat
 	  fmt.Printf("\033[5;0H\033[2K\rLat:\033[32m %v\033[0m\033[C", lat)
 	  fmt.Printf("\033[6;0H\033[2K\rLat RAW:\033[32m %d\033[0m\033[C", lat)
 fmt.Printf("\033[14;0H\033[2K\rRAW:\033[95m %v, %v\033[0m\033[C", lat, old_lat)
@@ -137,7 +137,7 @@ fmt.Printf("\033[14;0H\033[2K\rRAW:\033[95m %v, %v\033[0m\033[C", lat, old_lat)
         }else{
 	  fmt.Printf("\033[5;0H\033[2K\rLat:\033[93m %v\033[0m\033[C", lat)
 	  fmt.Printf("\033[6;0H\033[2K\rLat RAW:\033[91m %d\033[0m\033[C", lat)
-fmt.Printf("\033[15;0H\033[2K\rRAW:\033[91m %v, %v\033[0m\033[C", lat, old_lat)
+fmt.Printf("\033[14;0H\033[2K\rRAW:\033[91m %v, %v\033[0m\033[C", lat, old_lat)
 	  time.Sleep(time.Second)
         }
     }
@@ -317,12 +317,12 @@ atomic.AddUint64(&rps, 1)
             psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s fallback_application_name=%s connect_timeout=%d sslmode=disable", host, port, user, password, dbname, fallback_application_name, connect_timeout)
             db, err := sql.Open("postgres", psqlInfo)
                 if err != nil {
-            panic(err)
+                panic(err)
                 }
             defer db.Close()
             err = db.Ping()
                 if err != nil {
-            panic(err)
+                panic(err)
                 }
                     
             w.Write([]byte("<body style=background-color:grey;>"))
