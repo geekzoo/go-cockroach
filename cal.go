@@ -20,6 +20,7 @@ import (
     _ "github.com/lib/pq"
     "github.com/gorilla/mux"
     "net/http"
+    _ "net/http/pprof"
     "log"
     crand  "crypto/rand"
     "io"
