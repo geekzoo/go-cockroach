@@ -31,8 +31,8 @@ import (
 
 
 const (
-    host            = "10.1.9.238"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
-    port            = 26257			//PG PORT
+    host            = "127.0.0.1"		//PG HOST <GEO DNS round robbin to HAProxy> -> HAProxy -> LRU/RR cockroachdb nodes
+    port            = 26258			//PG PORT
     user            = "root"			//DB USER NAME
     password        = ""			//DB PASSWORD
     dbname          = "uuid"			//Database Name
@@ -43,7 +43,7 @@ const (
     carbon_host     = "127.0.0.1"		//Carbon IP/Hostname <Graphite>
     carbon_port     = "2000"			//Carbon port
     carbon_link     = "US.GF.TESTING.TEST."	//TODO
-    carbon_enabled  = true			//Enable=true Disable=false
+    carbon_enabled  = false			//Enable=true Disable=false
     irc_host        = "irc.domain.com"		//TODO
     irc_port        = 6666			//TODO
     elastic_host    = "insight.domain.com"	//TODO

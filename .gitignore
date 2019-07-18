@@ -55,4 +55,5 @@ notes.txt
 irc/
 scrap*
 go-cockroach
+go-bench
 .*
